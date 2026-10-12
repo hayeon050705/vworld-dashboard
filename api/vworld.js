@@ -40,6 +40,7 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store"); // 지오코더 결과 저장 금지 조건
     return res.status(200).json(await r.json());
   } catch (e) {
-    return res.status(400).json({ error: String(e.message).replace(key, "***") });
+    const cause = e.cause && (e.cause.code || e.cause.message) ? ` (${e.cause.code || e.cause.message})` : "";
+    return res.status(400).json({ error: String(e.message + cause).replace(key, "***") });
   }
 }
