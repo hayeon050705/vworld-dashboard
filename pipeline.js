@@ -17,7 +17,7 @@ const DEF = {
   ],
   weights: [25, 15, 20, 15, 10, 15],
   approved: null,
-  sub: { prod: "https://vworld-dashboard.vercel.app", repo: "", checks: [0, 1, 2, 3, 4].map(() => ({ who: "", line: "" })), reason: { type: "없음", note: "" } },
+  sub: { phoneOk: true, prod: "https://vworld-dashboard.vercel.app", repo: "", checks: [0, 1, 2, 3, 4].map(() => ({ who: "", line: "" })), reason: { type: "없음", note: "" } },
 };
 let st = JSON.parse(JSON.stringify(DEF));
 const done = { pdf: false, xlsx: false, csv: false };
@@ -52,7 +52,7 @@ function metrics(L) {
     parcels: s.layers["LP_PA_CBND_BUBUN"].n ?? 0,
     green: zones.some((z) => z[4].E >= 3),
     slope: num(st.dem[L].slope),
-    admin: (s.layers["LT_C_ADSIGG_INFO"].admin || [])[0] || (s.layers["LT_C_ADSIDO_INFO"].admin || [])[0] || "",
+    admin: ((s.layers["LT_C_ADSIGG_INFO"].admin || []).join("·") || (s.layers["LT_C_ADSIDO_INFO"].admin || []).join("·") || ""), // 반경이 여러 구에 걸치면 모두 표기
   };
 }
 
@@ -152,7 +152,7 @@ function axes(L) {
     { axis: "지형·경사", ev: [`${L}-6`],
       text: m.slope == null ? "DEM 평균 경사 미입력 — ② 지표 6 탭에서 입력" : `평균 경사 ${m.slope}° (임계 ${st.thr.join("/")}° 기준 ${g(m.slope, st.thr)}), ${d.src} ${d.res}, 조회일 ${d.date || "미입력"}` },
     { axis: "토지·필지", ev: [`${L}-4`, `${L}-5`],
-      text: `반경 ${m.s.radiusText} 내 필지 ${m.parcels}건${m.admin ? " · " + m.admin : ""}` },
+      text: `반경 ${m.s.radiusText} 내 필지 ${m.parcels}건${m.admin ? " · 반경이 걸친 행정구역: " + m.admin : ""}` },
   ];
 }
 function renderP4() {
@@ -479,7 +479,7 @@ function checkAuto(i, cs) {
     }));
     return bad ? ["불일치", "err"] : [`일치(${cs.rows.length}행)`, "ok"];
   }
-  return ["팀원 확인 필요", "warn"];
+  return st.sub.phoneOk ? ["확인됨", "ok"] : ["팀원 확인 필요", "warn"];
 }
 function renderP13() {
   const cs = chartSpecs(), sb = st.sub;
@@ -489,7 +489,7 @@ function renderP13() {
     `<span>배포 화면 갈무리 ${i + 1}<br><small>${i === 0 ? "production 주소, 휴대전화 폭" : "차트 2종이 보이는 화면"}</small><br>클릭해서 이미지 선택</span>`}<input type="file" accept="image/*" data-act="shot" data-i="${i}"></label>`;
   const rowsHtml = CHECKS.map((c, i) => {
     const [t, k] = checkAuto(i, cs);
-    return `<tr><td>${i + 1}</td><td>${esc(c)}</td><td class="st ${k}">${t}</td>
+    return `<tr><td>${i + 1}</td><td>${esc(c)}</td><td class="st ${k}">${t}${i === 4 ? ` <button class="mini" data-act="phoneOk">${st.sub.phoneOk ? "취소" : "확인됨으로"}</button>` : ""}</td>
       <td><input class="inp" data-act="chk" data-i="${i}" data-f="who" value="${esc(sb.checks[i].who)}" placeholder="이름"></td>
       <td><input class="inp wide" data-act="chk" data-i="${i}" data-f="line" value="${esc(sb.checks[i].line)}" placeholder="점검 결과를 한 줄로"></td></tr>`;
   }).join("");
@@ -538,6 +538,7 @@ const ACTS = {
     rd.onload = () => { shots[i] = rd.result; renderP13(); };
     rd.readAsDataURL(f);
   },
+  phoneOk: () => { st.sub.phoneOk = !st.sub.phoneOk; },
   chartCsv: () => chartCatalogCsv(),
   sheetPdf: () => {
     document.body.classList.add("print-sheet");
