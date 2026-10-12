@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/vworld.js": {
+      "maxDuration": 30
+    }
+  }
+}

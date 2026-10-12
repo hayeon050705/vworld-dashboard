@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VWorld 대상지 자료 수집</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="stylesheet" href="style.css?v=13" />
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="home" id="homeBtn" title="표지로">입지 비교 대시보드</button>
+    <div class="sitesw" id="sitesw" title="자료 표·추천·과제 탭에서 볼 후보지"><button data-s="A" class="on">후보지 A</button><button data-s="B">후보지 B</button></div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-p="11" class="on">표지</button>
+    <button data-p="10">A·B 비교</button>
+    <button data-p="0">지도 비교</button>
+    <button data-p="1">자료 표</button>
+    <button data-p="2">지구 추천</button>
+    <button data-p="3">유형(법령)</button>
+    <span class="sep"></span>
+    <button data-p="4">① 입지인자 4축</button>
+    <button data-p="5">② 지표 6</button>
+    <button data-p="6">③ 배분 3안</button>
+    <button data-p="7">④ 비교 매트릭스</button>
+    <button data-p="8">⑤ 역전점</button>
+    <button data-p="9">⑥ 제출</button>
+    <span class="sep"></span>
+    <button data-p="12">⑦ 산출물 차트</button>
+    <button data-p="13">⑧ 점검·제출 1쪽</button>
+  </nav>
+  <div class="msgbar"><span id="msg" class="msg"></span><button id="csv" disabled>자료 카탈로그 CSV</button></div>
+
+  <main class="pages">
+    <section class="page" id="p0">
+      <div class="mapcol"><div class="mapinfo" id="infoA"></div><div class="mapbox" id="mapboxA"><div id="mapA"></div><span class="ph">후보지 A 미입력</span></div></div>
+      <div class="mapcol"><div class="mapinfo" id="infoB"></div><div class="mapbox" id="mapboxB"><div id="mapB"></div><span class="ph">후보지 B 미입력</span></div></div>
+    </section>
+    <section class="page" id="p1">
+      <div class="l">
+        <table id="tbl">
+          <thead><tr><th>자료</th><th>출처 · 서비스</th><th>조회 방식</th><th>계산 · 저장 규칙</th><th>이번 조회 결과</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="foot" id="foot"></p>
+      </div>
+      <div class="r" id="p1chart"></div>
+    </section>
+    <section class="page" id="p2"><div class="empty">검색 후 표시됩니다.</div></section>
+    <section class="page" id="p3"><div class="empty">검색 후 표시됩니다.</div></section>
+    <section class="page" id="p4"></section>
+    <section class="page" id="p5"></section>
+    <section class="page" id="p6"></section>
+    <section class="page" id="p7"></section>
+    <section class="page" id="p8"></section>
+    <section class="page" id="p9"></section>
+    <section class="page" id="p10"></section>
+    <section class="page on" id="p11">
+      <div class="cover">
+        <p class="eyebrow">VWorld × 국토계획법</p>
+        <h1>입지 비교 대시보드</h1>
+        <p class="lede">두 후보지의 토지·용도지역·지구와 법령 근거를 한 번에 조회하고,<br>지표 6·배분 3안·가중치 역전점까지 비교해 제출 파일로 내보냅니다.</p>
+        <div class="entry">
+          <label><span>후보지 A</span><input id="addrA" type="text" placeholder="예: 서울특별시 종로구 홍지문2길 20" autocomplete="off" /></label>
+          <label><span>후보지 B</span><input id="addrB" type="text" placeholder="비교할 두 번째 주소 (선택)" autocomplete="off" /></label>
+          <div class="entry-row">
+            <select id="radius" title="조회 반경">
+              <option value="0.0010">반경 100m</option>
+              <option value="0.0030" selected>반경 300m</option>
+              <option value="0.0060">반경 600m</option>
+            </select>
+            <button id="coverGo" class="primary">분석 시작</button>
+            <button id="coverEx" class="ghost">예시 채우기</button>
+          </div>
+          <p id="coverMsg" class="msg"></p>
+        </div>
+        <div class="feats">
+          <div><b>자료 수집</b><span>브이월드 지적도·용도지역·지구·행정경계를 반경 안에서 조회</span></div>
+          <div><b>법령 분석</b><span>국토계획법·시행령 조문을 근거로 적합한 도시 유형 추천</span></div>
+          <div><b>의사결정</b><span>지표 6, 배분 3안, 가중치 승인·역전점, PDF·xlsx 제출</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="page" id="p12"></section>
+    <section class="page" id="p13"></section>
+  </main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="law.js?v=13"></script>
+<script src="charts.js?v=13"></script>
+<script src="app.js?v=13"></script>
+<script src="pipeline.js?v=13"></script>
+<script>initPipeline();</script>
+</body>
+</html>
